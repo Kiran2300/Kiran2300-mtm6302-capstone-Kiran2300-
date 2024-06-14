@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let offset = 0;
     const limit = 20;
     const maxPokemons = 100;  // Maximum number of Pokémon to load
+    let caughtPokemonIds = [];
 
+    // Function to fetch Pokémon data from the PokéAPI
     const fetchPokemon = async (offset, limit) => {
         if (offset >= maxPokemons) {
             loadMoreButton.style.display = 'none';  // Hide the "Load More" button if limit is reached
@@ -21,11 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`);
             const data = await response.json();
             displayPokemon(data.results);
+            offset += limit;
         } catch (error) {
             console.error('Error fetching Pokémon:', error);
         }
     };
 
+    // Function to display Pokémon cards in the gallery
     const displayPokemon = (pokemonList) => {
         pokemonList.forEach(pokemon => {
             const pokemonCard = document.createElement('div');
@@ -36,10 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</p>
             `;
             pokemonCard.addEventListener('click', () => showPokemonDetails(pokemon, pokemonId));
+            if (isCaught(pokemonId)) {
+                pokemonCard.classList.add('caught');
+            }
             pokemonGallery.appendChild(pokemonCard);
         });
+        updatePokemonCards();
     };
 
+    // Function to show Pokémon details in the modal
     const showPokemonDetails = async (pokemon, id) => {
         try {
             const response = await fetch(pokemon.url);
@@ -56,31 +65,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const toggleCatch = (id) => {
-        const caughtList = getCaughtList();
-        if (caughtList.includes(id)) {
-            caughtList.splice(caughtList.indexOf(id), 1);
-        } else {
-            caughtList.push(id);
-        }
-        localStorage.setItem('caughtList', JSON.stringify(caughtList));
+    // Function to close Pokémon details modal
+    closeDetailsButton.addEventListener('click', () => {
         pokemonDetails.style.display = 'none';
+    });
+
+    // Function to handle catching or releasing Pokémon
+    const toggleCatch = (id) => {
+        if (isCaught(id)) {
+            releasePokemon(id);
+        } else {
+            catchPokemon(id);
+        }
         updatePokemonCards();
     };
 
-    const getCaughtList = () => {
-        return JSON.parse(localStorage.getItem('caughtList')) || [];
+    // Function to catch a Pokémon
+    const catchPokemon = (id) => {
+        caughtPokemonIds.push(id);
     };
 
+    // Function to release a Pokémon
+    const releasePokemon = (id) => {
+        caughtPokemonIds = caughtPokemonIds.filter(pokemonId => pokemonId !== id);
+    };
+
+    // Function to check if a Pokémon is caught
     const isCaught = (id) => {
-        return getCaughtList().includes(id);
+        return caughtPokemonIds.includes(id);
     };
 
+    // Function to update Pokémon cards with catch status
     const updatePokemonCards = () => {
         const pokemonCards = document.querySelectorAll('.pokemon-card');
         pokemonCards.forEach(card => {
-            const id = parseUrl(card.querySelector('img').src);
-            if (isCaught(id)) {
+            const pokemonId = parseUrl(card.querySelector('img').src);
+            if (isCaught(pokemonId)) {
                 card.classList.add('caught');
             } else {
                 card.classList.remove('caught');
@@ -88,19 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Function to parse Pokémon ID from URL
     const parseUrl = (url) => {
         const parts = url.split('/');
         return parts[parts.length - 2];
     };
 
-    closeDetailsButton.addEventListener('click', () => {
-        pokemonDetails.style.display = 'none';
-    });
+    // Initial fetch to load Pokémon when the page loads
+    fetchPokemon(offset, limit);
 
+    // Event listener for "Load More" button click
     loadMoreButton.addEventListener('click', () => {
-        offset += limit;
         fetchPokemon(offset, limit);
     });
-
-    fetchPokemon(offset, limit);
 });
