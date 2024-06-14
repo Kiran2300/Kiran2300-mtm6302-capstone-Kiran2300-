@@ -2,9 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const pokemonGallery = document.getElementById('pokemon-gallery');
     const loadMoreButton = document.getElementById('load-more');
     const pokemonDetails = document.getElementById('pokemon-details');
+    const closeDetailsButton = document.getElementById('close-details');
+    const pokemonName = document.getElementById('pokemon-name');
+    const pokemonImage = document.getElementById('pokemon-image');
+    const pokemonAbilities = document.getElementById('pokemon-abilities');
+    const pokemonTypes = document.getElementById('pokemon-types');
+    const catchReleaseButton = document.getElementById('catch-release');
     let offset = 0;
-    const limit = 10;
-    const maxPokemons = 80;  // Maximum number of Pokémon to load
+    const limit = 20;
+    const maxPokemons = 100;  // Maximum number of Pokémon to load
 
     const fetchPokemon = async (offset, limit) => {
         if (offset >= maxPokemons) {
@@ -24,26 +30,27 @@ document.addEventListener('DOMContentLoaded', () => {
         pokemonList.forEach(pokemon => {
             const pokemonCard = document.createElement('div');
             pokemonCard.className = 'pokemon-card';
-            pokemonCard.textContent = pokemon.name;
-            pokemonCard.addEventListener('click', () => showPokemonDetails(pokemon));
+            const pokemonId = parseUrl(pokemon.url);
+            pokemonCard.innerHTML = `
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png" alt="${pokemon.name}">
+                <p>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</p>
+            `;
+            pokemonCard.addEventListener('click', () => showPokemonDetails(pokemon, pokemonId));
             pokemonGallery.appendChild(pokemonCard);
-            checkIfCaught(pokemonCard, pokemon.url);
         });
     };
 
-    const showPokemonDetails = async (pokemon) => {
+    const showPokemonDetails = async (pokemon, id) => {
         try {
             const response = await fetch(pokemon.url);
             const data = await response.json();
-            pokemonDetails.innerHTML = `
-                <h2>${data.name}</h2>
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png" alt="${data.name}">
-                <p>Abilities: ${data.abilities.map(ability => ability.ability.name).join(', ')}</p>
-                <p>Types: ${data.types.map(type => type.type.name).join(', ')}</p>
-                <button id="catch-release">${isCaught(data.id) ? 'Release' : 'Catch'}</button>
-            `;
-            document.getElementById('catch-release').addEventListener('click', () => toggleCatch(data.id));
-            pokemonDetails.style.display = 'block';
+            pokemonName.textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+            pokemonImage.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+            pokemonAbilities.textContent = `Abilities: ${data.abilities.map(ability => ability.ability.name).join(', ')}`;
+            pokemonTypes.textContent = `Types: ${data.types.map(type => type.type.name).join(', ')}`;
+            catchReleaseButton.textContent = isCaught(id) ? 'Release' : 'Catch';
+            catchReleaseButton.onclick = () => toggleCatch(id);
+            pokemonDetails.style.display = 'flex';
         } catch (error) {
             console.error('Error fetching Pokémon details:', error);
         }
@@ -72,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updatePokemonCards = () => {
         const pokemonCards = document.querySelectorAll('.pokemon-card');
         pokemonCards.forEach(card => {
-            const id = parseUrl(card.dataset.url);
+            const id = parseUrl(card.querySelector('img').src);
             if (isCaught(id)) {
                 card.classList.add('caught');
             } else {
@@ -82,16 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const parseUrl = (url) => {
-        return url.split('/').filter(Boolean).pop();
+        const parts = url.split('/');
+        return parts[parts.length - 2];
     };
 
-    const checkIfCaught = (card, url) => {
-        const id = parseUrl(url);
-        card.dataset.url = url;
-        if (isCaught(id)) {
-            card.classList.add('caught');
-        }
-    };
+    closeDetailsButton.addEventListener('click', () => {
+        pokemonDetails.style.display = 'none';
+    });
 
     loadMoreButton.addEventListener('click', () => {
         offset += limit;

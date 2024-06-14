@@ -5,16 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedex</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
     <header>
-        <h1>Pokedex</h1>
+        <h1>Pokédex</h1>
     </header>
     <main>
-        <div id="pokemon-gallery" class="pokemon-gallery"></div>
-        <button id="load-more">Load More</button>
-        <div id="pokemon-details" class="pokemon-details"></div>
+        <section id="pokemon-gallery" class="pokemon-gallery"></section>
+        <button id="load-more" class="load-more">Load More</button>
     </main>
-    <script src="script.js"></script>
+    <div id="pokemon-details" class="pokemon-details">
+        <div class="details-content">
+            <button id="close-details" class="close-details">&times;</button>
+            <h2 id="pokemon-name"></h2>
+            <img id="pokemon-image" src="" alt="">
+            <p id="pokemon-abilities"></p>
+            <p id="pokemon-types"></p>
+            <button id="catch-release" class="catch-release"></button>
+        </div>
+    </div>
 </body>
 </html>
