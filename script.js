@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadMoreButton = document.getElementById('load-more');
     const pokemonDetails = document.getElementById('pokemon-details');
     let offset = 0;
-    const limit = 20;
+    const limit = 10;
+    const maxPokemons = 80;  // Maximum number of Pokémon to load
 
     const fetchPokemon = async (offset, limit) => {
+        if (offset >= maxPokemons) {
+            loadMoreButton.style.display = 'none';  // Hide the "Load More" button if limit is reached
+            return;
+        }
         try {
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`);
             const data = await response.json();
