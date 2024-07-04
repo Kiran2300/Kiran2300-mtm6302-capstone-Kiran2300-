@@ -13,3 +13,6 @@ Step 1: create Branch Part-2
 ![image](https://github.com/Kiran2300/Kiran2300-mtm6302-capstone-Kiran2300-/assets/134239892/f2e234d8-e2cf-48f3-a68e-d6224e065d0d)
 Step 2: Merge it with part-1 <br>
 ![image](https://github.com/Kiran2300/Kiran2300-mtm6302-capstone-Kiran2300-/assets/134239892/f525902a-428d-4928-8d72-2329cfee160e)
+
+# CAPSTONE PART-3
+
