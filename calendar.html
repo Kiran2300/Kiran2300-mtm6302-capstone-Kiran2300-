@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astronomy Pictures of the Day</title>
+    <title>Event Calendar - Astronomy Pictures of the Day</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Astronomy Pictures of the Day</h1>
+        <h1>Event Calendar</h1>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -21,24 +21,17 @@
     </header>
 
     <main>
-        <section id="hero-section">
-            <div class="hero-content">
-                <h2>Welcome to Astronomy Pictures of the Day</h2>
-                <p>Explore the cosmos with stunning images captured by NASA's Astronomy Picture of the Day (APOD) API.</p>
-            </div>
-        </section>
-
-        <section id="date-form">
-            <h2>Explore APOD by Date</h2>
-            <form id="calendar-form">
-                <label for="calendar-date">Select Date:</label>
-                <input type="date" id="calendar-date">
-                <button type="submit" id="submit-btn">Submit</button>
+        <section>
+            <h2>Select a Date</h2>
+            <form id="date-form">
+                <label for="calendar-date">Choose a Date:</label>
+                <input type="date" id="calendar-date" required>
+                <button type="submit">Fetch APOD</button>
             </form>
         </section>
-    
+
         <section id="apod-container">
-            <!-- APOD content will be dynamically added here -->
+            <!-- APOD image and details will be displayed here -->
         </section>
     </main>
 
